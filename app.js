@@ -471,41 +471,38 @@
   // ============================================
   // 9. MODEL FILTERING (Cloud tab)
   // ============================================
-  const filterChips = document.querySelectorAll('.filter-chip');
-  const modelCards = document.querySelectorAll('.model-card');
+  const modelCatBtns = document.querySelectorAll('.model-cat-btn');
+  const modelRows = document.querySelectorAll('.model-row');
 
-  if (filterChips.length > 0) {
-    filterChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        // Update active chip
-        filterChips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
+  if (modelCatBtns.length > 0) {
+    modelCatBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        modelCatBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-        const filter = chip.getAttribute('data-filter');
+        const filter = btn.getAttribute('data-filter');
 
-        modelCards.forEach(card => {
+        let visibleCount = 0;
+        modelRows.forEach(row => {
           if (filter === 'all') {
-            card.style.display = '';
+            row.style.display = '';
+            visibleCount++;
           } else {
-            const category = card.getAttribute('data-category');
+            const category = row.getAttribute('data-category');
             if (category === filter) {
-              card.style.display = '';
+              row.style.display = '';
+              visibleCount++;
             } else {
-              card.style.display = 'none';
+              row.style.display = 'none';
             }
           }
         });
 
-        // Update model count
-        const visibleCount = document.querySelectorAll('.model-card[style*="display: none"]').length === modelCards.length && filter !== 'all'
-          ? 0
-          : filter === 'all'
-            ? modelCards.length
-            : document.querySelectorAll(`.model-card[data-category="${filter}"]`).length;
-
-        const countEl = document.querySelector('.model-count');
-        if (countEl) {
-          countEl.textContent = `${visibleCount} models`;
+        // Update counter
+        const counterEl = document.querySelector('.model-counter');
+        if (counterEl) {
+          counterEl.textContent = `${visibleCount} models`;
         }
       });
     });
@@ -515,12 +512,12 @@
   // ============================================
   // 10. RATE LIMIT SELECTOR
   // ============================================
-  const rateOptions = document.querySelectorAll('.rate-option');
+  const ratePills = document.querySelectorAll('.rate-pill');
 
-  rateOptions.forEach(opt => {
-    opt.addEventListener('click', () => {
-      rateOptions.forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
+  ratePills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      ratePills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
     });
   });
 
@@ -575,26 +572,33 @@
     draw(ctx) {
       if (this.life <= 0) return;
       const alpha = this.life * this.sparkle;
-      // Neon cyan / light blue glow
+
+      // Determine muted dust color based on theme
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      // Ultra-faded muted lavender-gray — ghost-like, barely visible
+      const baseR = 180, baseG = 170, baseB = 195;
+      const outerMult = isDark ? 0.12 : 0.06;
+      const coreMult = isDark ? 0.25 : 0.12;
+      const brightMult = isDark ? 0.18 : 0.08;
+
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.rotation);
 
-      // Outer glow
-      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 4);
-      gradient.addColorStop(0, `rgba(0, 210, 255, ${alpha * 0.6})`);
-      gradient.addColorStop(0.5, `rgba(0, 210, 255, ${alpha * 0.2})`);
-      gradient.addColorStop(1, `rgba(0, 210, 255, 0)`);
+      // Outer glow — extremely faint mist
+      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 5);
+      gradient.addColorStop(0, `rgba(${baseR}, ${baseG}, ${baseB}, ${alpha * outerMult})`);
+      gradient.addColorStop(0.6, `rgba(${baseR}, ${baseG}, ${baseB}, ${alpha * outerMult * 0.4})`);
+      gradient.addColorStop(1, `rgba(${baseR}, ${baseG}, ${baseB}, 0)`);
 
       ctx.beginPath();
-      ctx.arc(0, 0, this.size * 4, 0, Math.PI * 2);
+      ctx.arc(0, 0, this.size * 5, 0, Math.PI * 2);
       ctx.fillStyle = gradient;
       ctx.fill();
 
-      // Core particle
+      // Core particle — dusty lavender-slate
       ctx.beginPath();
       if (this.shape === 'star') {
-        // 4-point star
         for (let i = 0; i < 8; i++) {
           const angle = (i * Math.PI) / 4;
           const r = i % 2 === 0 ? this.size : this.size * 0.4;
@@ -608,13 +612,13 @@
         ctx.arc(0, 0, this.size, 0, Math.PI * 2);
       }
 
-      ctx.fillStyle = `rgba(0, 210, 255, ${alpha * 0.9})`;
+      ctx.fillStyle = `rgba(${baseR}, ${baseG}, ${baseB}, ${alpha * coreMult})`;
       ctx.fill();
 
-      // Bright core
+      // Faint inner core
       ctx.beginPath();
-      ctx.arc(0, 0, this.size * 0.4, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.8})`;
+      ctx.arc(0, 0, this.size * 0.35, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${baseR}, ${baseG}, ${baseB}, ${alpha * brightMult})`;
       ctx.fill();
 
       ctx.restore();
@@ -671,7 +675,33 @@
 
 
   // ============================================
-  // 14. SMOOTH DOCK SCROLL ON MOBILE
+  // 14. ECOSYSTEM TAB SWITCHING (Technology Page)
+  // ============================================
+  const ecoTabBtns = document.querySelectorAll('.eco-tab-btn');
+  const ecoTabPanels = document.querySelectorAll('.eco-tab-panel');
+
+  ecoTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active from all buttons
+      ecoTabBtns.forEach(b => b.classList.remove('active'));
+      // Activate clicked button
+      btn.classList.add('active');
+
+      // Hide all panels
+      const tabId = btn.getAttribute('data-eco-tab');
+      ecoTabPanels.forEach(panel => panel.classList.remove('active'));
+
+      // Show target panel
+      const targetPanel = document.getElementById(`eco-${tabId}`);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+    });
+  });
+
+
+  // ============================================
+  // 15. SMOOTH DOCK SCROLL ON MOBILE
   // ============================================
   const cosmicDock = document.getElementById('cosmicDock');
   if (cosmicDock && 'ontouchstart' in window) {
