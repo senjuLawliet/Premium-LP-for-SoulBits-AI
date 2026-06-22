@@ -1171,17 +1171,18 @@ section {
 }
 
 .innovation-number {
-  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.5rem;
-  font-weight: 800;
-  background: var(--gradient-text);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   line-height: 1;
   min-width: 60px;
   text-align: center;
-  opacity: 0.7;
+  /* Emojis render as color glyphs and need visible text color */
+  color: var(--text-primary);
+  filter: drop-shadow(0 0 8px var(--glow-color-soft));
+  transition: transform 0.3s ease;
+}
+
+.innovation-card:hover .innovation-number {
+  transform: scale(1.1);
 }
 
 .innovation-content {
@@ -1298,67 +1299,6 @@ section {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 24px;
-}
-
-/* ---- Innovation Grid (2-Column) ---- */
-.innovation-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin-top: 24px;
-}
-
-.innovation-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 24px;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-}
-
-.innovation-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-glow);
-  box-shadow: 0 0 30px var(--glow-color-soft), 0 8px 40px rgba(0, 0, 0, 0.2);
-}
-
-.innovation-number {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 800;
-  background: var(--gradient-text);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-  min-width: 60px;
-  text-align: center;
-  opacity: 0.7;
-}
-
-.innovation-content {
-  flex: 1;
-}
-
-.innovation-content h4 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  letter-spacing: -0.01em;
-}
-
-.innovation-content p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  line-height: 1.65;
 }
 
 /* ---- About Principles ---- */
