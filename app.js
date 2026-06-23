@@ -20,16 +20,21 @@
   const MOUSE_RADIUS = 200;
 
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
   }
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
   class Node {
     constructor() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
+      this.x = Math.random() * window.innerWidth;
+      this.y = Math.random() * window.innerHeight;
       this.size = Math.random() * 2 + 1;
       this.vx = (Math.random() - 0.5) * 0.25;
       this.vy = (Math.random() - 0.5) * 0.25;
@@ -41,10 +46,10 @@
       this.y += this.vy;
 
       // Wrap around edges
-      if (this.x < -20) this.x = canvas.width + 20;
-      if (this.x > canvas.width + 20) this.x = -20;
-      if (this.y < -20) this.y = canvas.height + 20;
-      if (this.y > canvas.height + 20) this.y = -20;
+      if (this.x < -20) this.x = window.innerWidth + 20;
+      if (this.x > window.innerWidth + 20) this.x = -20;
+      if (this.y < -20) this.y = window.innerHeight + 20;
+      if (this.y > window.innerHeight + 20) this.y = -20;
 
       // Gentle ambient drift
       this.vx += (Math.random() - 0.5) * 0.002;
@@ -100,10 +105,10 @@
       };
     } else {
       return {
-        nodeFill: '40, 40, 40',
-        lineStroke: '40, 40, 40',
-        nodeOpacityBase: 0.12,
-        lineOpacityBase: 0.04,
+        nodeFill: '55, 50, 80',
+        lineStroke: '55, 50, 80',
+        nodeOpacityBase: 0.55,
+        lineOpacityBase: 0.18,
         glowRadius: 200
       };
     }
@@ -534,8 +539,13 @@
   let sdParticles = [];
 
   function resizeStardust() {
-    stardustCanvas.width = window.innerWidth;
-    stardustCanvas.height = window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    stardustCanvas.width = window.innerWidth * dpr;
+    stardustCanvas.height = window.innerHeight * dpr;
+    stardustCanvas.style.width = window.innerWidth + 'px';
+    stardustCanvas.style.height = window.innerHeight + 'px';
+    sdCtx.setTransform(1, 0, 0, 1, 0, 0);
+    sdCtx.scale(dpr, dpr);
   }
   resizeStardust();
   window.addEventListener('resize', resizeStardust);
